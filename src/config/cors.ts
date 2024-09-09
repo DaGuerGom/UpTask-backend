@@ -9,9 +9,8 @@ export const corsConfig: CorsOptions = {
 
         if(whitelist.includes(origin)) {
             callback(null, true)
-        } else {
-            console.log("origin: "+origin)
-            //callback(new Error('Error de CORS'))
+        } else if(origin) {
+            callback(new Error('Error de CORS'))
         }
     }
 }
