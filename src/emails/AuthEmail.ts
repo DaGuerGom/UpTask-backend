@@ -1,4 +1,6 @@
-import { transporter } from "../config/nodemailer"
+import { Resend } from 'resend';
+import dotenv from 'dotenv'
+dotenv.config()
 
 interface IEmail {
     email: string
@@ -6,35 +8,73 @@ interface IEmail {
     token: string
 }
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export class AuthEmail{
 
     static sendConfirmationEmail=async(user:IEmail)=>{
-        await transporter.sendMail({
-            from: 'UpTask <admin@uptask.com>',
-            to: user.email,
-            subject: 'UpTask - Confirma tu cuenta',
-            text: 'UpTask - Confirma tu cuenta',
-            html: `<p>Hola: ${user.name}, has creado tu cuenta en UpTask, ya casi esta todo listo, solo debes confirmar tu cuenta</p>
-                <p>Visita el siguiente enlace:</p>
-                <a href="${process.env.FRONTEND_URL}/auth/confirm-account">Confirmar cuenta</a>
-                <p>E ingresa el código: <b>${user.token}</b></p>
-                <p>Este token expira en 15 minutos</p>
-            `
-        })
-    }
+        // await transporter.sendMail({
+        //     from: 'UpTask <admin@uptask.com>',
+        //     to: user.email,
+        //     subject: 'UpTask - Confirma tu cuenta',
+        //     text: 'UpTask - Confirma tu cuenta',
+        //     html: `<p>Hola: ${user.name}, has creado tu cuenta en UpTask, ya casi esta todo listo, solo debes confirmar tu cuenta</p>
+        //         <p>Visita el siguiente enlace:</p>
+        //         <a href="${process.env.FRONTEND_URL}/auth/confirm-account">Confirmar cuenta</a>
+        //         <p>E ingresa el código: <b>${user.token}</b></p>
+        //         <p>Este token expira en 15 minutos</p>
+        //     `
+        // })
+            const { data, error } = await resend.emails.send({
+                from: process.env.SMTP_USER,
+                to: [user.email],
+                subject: 'UpTask - Confirma tu cuenta',
+                html: `<p>Hola: ${user.name}, has creado tu cuenta en UpTask, ya casi esta todo listo, solo debes confirmar tu cuenta</p>
+    <p>Visita el siguiente enlace:</p>
+    <a href="${process.env.FRONTEND_URL}/auth/confirm-account">Confirmar cuenta</a>
+    <p>E ingresa el código: <b>${user.token}</b></p>
+    <p>Este token expira en 15 minutos</p>
+ `
+            });
+
+            if (error) {
+                return console.error({ error });
+            }
+
+            console.log({ data });
+    };
+    
 
     static sendPasswordResetToken = async ( user : IEmail ) => {
-        const info = await transporter.sendMail({
-            from: 'UpTask <admin@uptask.com>',
-            to: user.email,
-            subject: 'UpTask - Reestablece tu password',
-            text: 'UpTask - Reestablece tu password',
-            html: `<p>Hola: ${user.name}, has solicitado reestablecer tu password.</p>
-                <p>Visita el siguiente enlace:</p>
-                <a href="${process.env.FRONTEND_URL}/auth/new-password">Reestablecer Password</a>
-                <p>E ingresa el código: <b>${user.token}</b></p>
-                <p>Este token expira en 15 minutos</p>
-            `
-        })
+        // const info = await transporter.sendMail({
+        //     from: 'UpTask <admin@uptask.com>',
+        //     to: user.email,
+        //     subject: 'UpTask - Reestablece tu password',
+        //     text: 'UpTask - Reestablece tu password',
+        //     html: `<p>Hola: ${user.name}, has solicitado reestablecer tu password.</p>
+        //         <p>Visita el siguiente enlace:</p>
+        //         <a href="${process.env.FRONTEND_URL}/auth/new-password">Reestablecer Password</a>
+        //         <p>E ingresa el código: <b>${user.token}</b></p>
+        //         <p>Este token expira en 15 minutos</p>
+        //     `
+        // })
+            const { data, error } = await resend.emails.send({
+                from: process.env.SMTP_USER,
+                to: [user.email],
+                subject: 'UpTask - Reestablece tu password',
+                html: `<p>Hola: ${user.name}, has solicitado reestablecer tu password.</p>
+    <p>Visita el siguiente enlace:</p>
+    <a href="${process.env.FRONTEND_URL}/auth/new-password">Reestablecer Password</a>
+    <p>E ingresa el código: <b>${user.token}</b></p>
+    <p>Este token expira en 15 minutos</p>
+`
+            });
+
+            if (error) {
+                return console.error({ error });
+            }
+
+            console.log({ data });
+        
     }
 }
