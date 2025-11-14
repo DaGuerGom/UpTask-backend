@@ -163,7 +163,6 @@ export class AuthController{
                 name: user.name,
                 token: token.token
             })
-
             res.send("Revisa tu e-mail para instrucciones")
 
         } catch (error) {
