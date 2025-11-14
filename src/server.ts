@@ -14,8 +14,11 @@ const app=express()
 app.use(cors(corsConfig))
 app.use(express.json())
 
-//Routes
-app.use("/api/v1/auth",authRoutes)
-app.use("/api/v1/projects",projectRoutes)
+//Routes development
+// app.use("/api/v1/auth",authRoutes)
+// app.use("/api/v1/projects",projectRoutes)
+//Routes production
+app.use("/auth",authRoutes)
+app.use("/projects",projectRoutes)
 
 export default app
